@@ -6,7 +6,8 @@ const app = express();
 const cors = require('cors');
 const PORT = 3001;
 
-const uploadedImages = []; // Array to store uploaded image information
+// Array to store images
+const uploadedImages = [];
 
 // Set up storage for uploaded images
 const storage = multer.diskStorage({
@@ -17,7 +18,7 @@ const storage = multer.diskStorage({
 		const originalFilename = file.originalname;
 		let filename = originalFilename;
 
-		// Check if the filename already exists
+		// Check if the filename already exists, if true add incrementing number to end
 		let counter = 1;
 		while (uploadedImages.some((img) => img.filename === filename)) {
 			const [name, extension] = originalFilename.split('.');
@@ -31,11 +32,13 @@ const storage = multer.diskStorage({
 	},
 });
 
+// Multer middleware for file storage
 const upload = multer({ storage });
 
 // Serve uploaded images statically from the 'uploads' directory
 app.use('/uploads', express.static('uploads'));
 
+// Cors header
 app.use(cors());
 
 // GET all images
@@ -59,13 +62,8 @@ app.delete('/api/images/:filename', async (req, res) => {
 
 	if (index !== -1) {
 		const imagePath = path.join(__dirname, 'uploads', filename);
-
-		// Delete the file from the 'uploads' directory
 		await fs.unlink(imagePath);
-
-		// Remove the image information from the array
 		uploadedImages.splice(index, 1);
-
 		res.json({ success: true, message: 'Image deleted successfully' });
 	} else {
 		res.json({ success: false, message: 'Image not found' });

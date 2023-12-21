@@ -1,34 +1,31 @@
 // ImageGrid.tsx
-import React, { useState } from 'react'
-import * as mui from '@mui/material'
-import { Images, deleteImage } from '../store'
+import { useState } from 'react'
+import { Grid, Box, Typography, IconButton, Snackbar, useMediaQuery } from '@mui/material'
+import { Image, deleteImage } from '../store'
 import DeleteIcon from '@mui/icons-material/Delete'
 
 interface ImageGridProps {
-  images: Images[]
+  images: Image[]
   getImages: () => void
 }
 
 export const ImageGrid = ({ images, getImages }: ImageGridProps) => {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-    
   const [snackbarInfo, setSnackbarInfo] = useState<{ open: boolean, message: string }>({
     open: false,
     message: '',
   })
 
-  const isSmallScreen = mui.useMediaQuery('(max-width:1100px)')
-
-
+  // Handle the checks for hover and small screen, if true for either will show info bar
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index)
   }
-
   const handleMouseLeave = () => {
     setHoveredIndex(null)
   }
+  const isSmallScreen = useMediaQuery('(max-width:1100px)')
 
-   const handleDelete = async (filename: string) => {
+  const handleDelete = async (filename: string) => {
     try {
       await deleteImage(filename)
       setSnackbarInfo({ open: true, message: 'Image deleted successfully' })
@@ -43,39 +40,41 @@ export const ImageGrid = ({ images, getImages }: ImageGridProps) => {
     setSnackbarInfo({ open: false, message: '' })
   }
 
+  // Create path to allow image to work in src
   const constructImagePath = (relativePath: string | undefined) => {
     const serverUrl = 'http://localhost:3001'
     return `${serverUrl}${relativePath}`
   }
 
   return (
-    <mui.Box style={{ marginTop: '70px' }}>
-      <mui.Grid container spacing={2}>
-        <mui.Grid item xs={12}>
-          <mui.Typography>{images.length === 1 ? (images.length + " image") : (images.length + " images")}</mui.Typography>
-        </mui.Grid>
+    <Box style={{ marginTop: '70px' }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Typography>{ images.length === 1 ? (images.length + " image") : (images.length + " images") }</Typography>
+        </Grid>
         {images.length === 0 ? (
-          <mui.Grid item xs={12} display="flex" justifyContent="center">
-            <mui.Typography>There are no images to display</mui.Typography>
-          </mui.Grid>
+          <Grid item xs={12} display="flex" justifyContent="center">
+            <Typography>There are no images to display</Typography>
+          </Grid>
         ) : (
           images.map((image, index) => (
-            <mui.Grid
-              key={index}
+            <Grid
+              key={ index }
               item
               xs={12}
               md={6}
-              onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
+              onMouseEnter={ () => handleMouseEnter(index) }
+              onMouseLeave={ handleMouseLeave }
               sx={{ position: 'relative' }}
             >
               <img
-                src={constructImagePath(image.path)}
-                alt={`Image ${index}`}
+                src={ constructImagePath(image.path) }
+                alt={ image.filename }
                 style={{ width: '100%', height: '500px', objectFit: 'cover' }}
               />
+              { /* If image is hovered or user is on small screen show info box */ }
               {(hoveredIndex === index || isSmallScreen) && (
-                <mui.Box
+                <Box
                   sx={{
                     position: 'absolute',
                     bottom: 0,
@@ -87,17 +86,17 @@ export const ImageGrid = ({ images, getImages }: ImageGridProps) => {
                     padding: '8px',
                   }}
                 >
-                  <mui.Typography>{image.filename}</mui.Typography>
-                  <mui.IconButton onClick={() => handleDelete(image.filename)} sx={{marginRight:"30px"}}>
+                  <Typography>{image.filename}</Typography>
+                  <IconButton onClick={ () => handleDelete(image.filename)} sx={{ marginRight:"30px" } }>
                     <DeleteIcon />
-                  </mui.IconButton>
-                </mui.Box>
+                  </IconButton>
+                </Box>
               )}
-            </mui.Grid>
+            </Grid>
           ))
         )}
-      </mui.Grid>
-      <mui.Snackbar
+      </Grid>
+      <Snackbar
         open={snackbarInfo.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
@@ -110,6 +109,6 @@ export const ImageGrid = ({ images, getImages }: ImageGridProps) => {
   }
 }}
       />
-    </mui.Box>
+    </Box>
   )
 }

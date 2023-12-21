@@ -1,18 +1,18 @@
 import axios from "axios"
 
-export interface Images {
+export interface Image {
     filename: any
     path: string | undefined
-    images: {
-        filename: string,
-        path: string
-    }[]
 }
 
 export const fetchImages = async () => {
+  try {
     const response = await axios.get('http://localhost:3001/api/images')
-    console.info(response.data)
     return response.data
+  } catch (error) {
+    console.error('Error uploading image:', error)
+    throw error
+  }
 }
 
 export const postImage = async (file: File) => {
