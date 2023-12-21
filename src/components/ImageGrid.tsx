@@ -11,6 +11,11 @@ interface ImageGridProps {
 
 export const ImageGrid = ({ images, getImages }: ImageGridProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+    
+  const [snackbarInfo, setSnackbarInfo] = useState<{ open: boolean, message: string }>({
+    open: false,
+    message: '',
+  })
 
   const isSmallScreen = mui.useMediaQuery('(max-width:1100px)')
 
@@ -24,8 +29,18 @@ export const ImageGrid = ({ images, getImages }: ImageGridProps) => {
   }
 
    const handleDelete = async (filename: string) => {
-    await deleteImage(filename)
-    getImages()
+    try {
+      await deleteImage(filename)
+      setSnackbarInfo({ open: true, message: 'Image deleted successfully' })
+      getImages()
+    } catch (error) {
+        console.error('Error deleting image:', error)
+        setSnackbarInfo({ open: true, message: 'Error deleting image' })
+    }
+  }
+
+  const handleCloseSnackbar = () => {
+    setSnackbarInfo({ open: false, message: '' })
   }
 
   const constructImagePath = (relativePath: string | undefined) => {
@@ -37,7 +52,7 @@ export const ImageGrid = ({ images, getImages }: ImageGridProps) => {
     <mui.Box style={{ marginTop: '70px' }}>
       <mui.Grid container spacing={2}>
         <mui.Grid item xs={12}>
-          <mui.Typography>{images.length} images</mui.Typography>
+          <mui.Typography>{images.length === 1 ? (images.length + " image") : (images.length + " images")}</mui.Typography>
         </mui.Grid>
         {images.length === 0 ? (
           <mui.Grid item xs={12} display="flex" justifyContent="center">
@@ -82,6 +97,19 @@ export const ImageGrid = ({ images, getImages }: ImageGridProps) => {
           ))
         )}
       </mui.Grid>
+      <mui.Snackbar
+        open={snackbarInfo.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        message={snackbarInfo.message}
+        ContentProps={{
+  sx: {
+    display: 'block',
+    textAlign: "center"
+  }
+}}
+      />
     </mui.Box>
   )
 }
