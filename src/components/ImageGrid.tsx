@@ -31,7 +31,6 @@ export const ImageGrid = ({ images, getImages }: ImageGridProps) => {
       setSnackbarInfo({ open: true, message: 'Image deleted successfully' })
       getImages()
     } catch (error) {
-        console.error('Error deleting image:', error)
         setSnackbarInfo({ open: true, message: 'Error deleting image' })
     }
   }

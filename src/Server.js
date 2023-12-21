@@ -1,9 +1,9 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs').promises;
+import express from 'express'
+import multer from 'multer'
+import path from 'path'
+import cors from 'cors'
+import fs from 'fs'
 const app = express();
-const cors = require('cors');
 const PORT = 3001;
 
 // Array to store images

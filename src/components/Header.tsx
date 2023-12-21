@@ -36,7 +36,6 @@ export const Header = ({ onSearchChange, getImages }: HeaderProps) => {
         setSnackbarInfo({ open: true, message: 'Image uploaded successfully' })
         getImages()
       } catch (error) {
-        console.error('Error uploading image:', error)
         setSnackbarInfo({ open: true, message: 'Error uploading image' })
       }
     }
@@ -71,6 +70,7 @@ export const Header = ({ onSearchChange, getImages }: HeaderProps) => {
           onChange={ handleFileUpload }
           // Create aria label for screen readers
           id="file-upload-label"
+          data-testid="file-upload-label"
         />
         </Button>
       </Toolbar>

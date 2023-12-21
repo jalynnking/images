@@ -22,8 +22,11 @@ export const postImage = async (file: File) => {
 
     // Post the new image
     const response = await axios.post('http://localhost:3001/api/images', formData)
-    return response.data
+    if (response && response.data) {
+      return response.data
+    }
   } catch (error) {
+
     console.error('Error uploading image:', error)
     throw error
   }
